@@ -9,7 +9,7 @@ import { Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 
 type VoiceState = "idle" | "listening" | "thinking" | "speaking"
-const seed: ReceivedMessage[] = [{ id: "welcome", timestamp: 1, from: { isLocal: false }, message: "Hi — what would you like to practise today?" }]
+const seed = [{ id: "welcome", timestamp: 1, from: { isLocal: false }, message: "Hi — what would you like to practise today?" }] as ReceivedMessage[]
 const demoReply = "Nice. Let's practise that together. Tell me a little more and we'll keep the conversation going."
 
 export default function Home() {
