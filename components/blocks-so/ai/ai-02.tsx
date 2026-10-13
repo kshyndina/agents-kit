@@ -9,6 +9,7 @@ import {
   IconGauge,
   IconPhotoScan,
 } from "@tabler/icons-react"
+import { Phone } from "lucide-react"
 import * as React from "react"
 
 import {
@@ -49,6 +50,7 @@ const prompts = [
 export type BlocksAi02Props = {
   className?: string
   defaultModel?: (typeof blocksAi02Models)[number]["value"]
+  onVoiceStart?: () => void
   onFilesSelected?: (files: File[]) => void
   onSubmit?: (message: string, model: string) => void
   renderComposer?: (composer: React.ReactNode) => React.ReactNode
@@ -57,6 +59,7 @@ export type BlocksAi02Props = {
 export function BlocksAi02({
   className,
   defaultModel = "gpt-5",
+  onVoiceStart,
   onFilesSelected,
   onSubmit,
   renderComposer,
@@ -118,8 +121,27 @@ export function BlocksAi02({
       </div>
 
       <div className="flex min-h-10 items-center gap-2 p-2 pt-1">
-        <div aria-label="Workspace context" className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted" role="img">
-          <IconCloud className="size-4 text-muted-foreground" aria-hidden="true" />
+        <div aria-label="Conversation actions" className="flex shrink-0 items-center gap-1" role="group">
+          <Button
+            aria-label="Attach images"
+            className="size-8 rounded-full text-muted-foreground transition-[background-color,color,transform] duration-150 hover:text-foreground active:scale-[0.96]"
+            onClick={() => fileInputRef.current?.click()}
+            title="Attach images"
+            type="button"
+            variant="ghost"
+          >
+            <IconPhotoScan className="size-[18px]" />
+          </Button>
+          <Button
+            aria-label="Start voice session"
+            className="size-8 rounded-full text-muted-foreground transition-[background-color,color,transform] duration-150 hover:text-foreground active:scale-[0.96]"
+            onClick={onVoiceStart}
+            title="Start voice session"
+            type="button"
+            variant="ghost"
+          >
+            <Phone className="size-[18px]" />
+          </Button>
         </div>
 
         <Select onValueChange={(value) => value && setModel(value)} value={model}>
@@ -151,16 +173,6 @@ export function BlocksAi02({
         </Select>
 
         <div className="ml-auto flex items-center gap-1.5">
-          <Button
-            aria-label="Attach images"
-            className="size-8 rounded-full text-muted-foreground transition-[background-color,color,transform] duration-150 hover:text-foreground active:scale-[0.96]"
-            onClick={() => fileInputRef.current?.click()}
-            title="Attach images"
-            type="button"
-            variant="ghost"
-          >
-            <IconPhotoScan className="size-[18px]" />
-          </Button>
           <Button
             aria-label="Send message"
             className="size-8 rounded-full transition-[background-color,transform,opacity] duration-150 active:scale-[0.96]"
