@@ -32,18 +32,18 @@ export const blocksAi02Models = [
 const prompts = [
   {
     icon: IconFileSpark,
-    label: "Summarize field notes",
-    prompt: "Summarize the latest field notes into decisions, evidence, and open questions.",
+    label: "Practise a flashcard deck",
+    prompt: "Let's practise a flashcard deck together.",
   },
   {
     icon: IconGauge,
-    label: "Compare survey runs",
-    prompt: "Compare the two survey runs and explain the largest changes with supporting evidence.",
+    label: "Practise speaking about a topic",
+    prompt: "Let's practise speaking about a topic. Please ask me a question to get started.",
   },
   {
     icon: IconAlertTriangle,
-    label: "Flag missing evidence",
-    prompt: "Review this workspace and flag the three most important claims that still need evidence.",
+    label: "Practise a conversation",
+    prompt: "Let's practise a conversation in my learning language. Start with a simple greeting.",
   },
 ] as const
 
@@ -51,6 +51,7 @@ export type BlocksAi02Props = {
   className?: string
   defaultModel?: (typeof blocksAi02Models)[number]["value"]
   onVoiceStart?: () => void
+  voiceActive?: boolean
   onFilesSelected?: (files: File[]) => void
   onSubmit?: (message: string, model: string) => void
   renderComposer?: (composer: React.ReactNode) => React.ReactNode
@@ -60,6 +61,7 @@ export function BlocksAi02({
   className,
   defaultModel = "gpt-5",
   onVoiceStart,
+  voiceActive = false,
   onFilesSelected,
   onSubmit,
   renderComposer,
@@ -132,16 +134,6 @@ export function BlocksAi02({
           >
             <IconPhotoScan className="size-[18px]" />
           </Button>
-          <Button
-            aria-label="Start voice session"
-            className="size-8 rounded-full text-muted-foreground transition-[background-color,color,transform] duration-150 hover:text-foreground active:scale-[0.96]"
-            onClick={onVoiceStart}
-            title="Start voice session"
-            type="button"
-            variant="ghost"
-          >
-            <Phone className="size-[18px]" />
-          </Button>
         </div>
 
         <Select onValueChange={(value) => value && setModel(value)} value={model}>
@@ -173,6 +165,17 @@ export function BlocksAi02({
         </Select>
 
         <div className="ml-auto flex items-center gap-1.5">
+          <Button
+            aria-label={voiceActive ? "End voice session" : "Start voice session"}
+            aria-pressed={voiceActive}
+            className="size-8 rounded-full text-muted-foreground transition-[background-color,color,transform] duration-150 hover:text-foreground active:scale-[0.96]"
+            onClick={onVoiceStart}
+            title={voiceActive ? "End voice session" : "Start voice session"}
+            type="button"
+            variant="ghost"
+          >
+            <Phone className="size-[18px]" />
+          </Button>
           <Button
             aria-label="Send message"
             className="size-8 rounded-full transition-[background-color,transform,opacity] duration-150 active:scale-[0.96]"
