@@ -252,3 +252,9 @@ html.dark {
 .ug-composer [aria-label^="Model:"] { color:#171817; }
 .ug-composer [aria-label^="Model:"] .bg-gradient-to-r { background:none; -webkit-text-fill-color:#2453E6; color:#2453E6; }
 @media (max-width:600px) { .ug-starters { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; } .ug-starters button { flex:none; max-width:80vw; } .ug-message-agent {padding:15px 17px;} }
+
+/* One-tap optional replies float immediately above the chat composer. */
+.ug-bottom .ug-starters { max-width:none; margin:0 0 12px; justify-content:flex-end; }
+.ug-bottom .ug-starters button { background:#eaf0ff; border-color:#d2defe; color:#173aa9; }
+.ug-bottom .ug-starters button:hover { background:#dfe8ff; border-color:#2453E6; }
+@media(max-width:600px){.ug-bottom .ug-starters {justify-content:flex-start;}}

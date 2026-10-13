@@ -52,7 +52,6 @@ export type BlocksAi02Props = {
   defaultModel?: (typeof blocksAi02Models)[number]["value"]
   onVoiceStart?: () => void
   voiceActive?: boolean
-  suggestedDraft?: { text: string; id: number }
   onFilesSelected?: (files: File[]) => void
   onSubmit?: (message: string, model: string) => void
   renderComposer?: (composer: React.ReactNode) => React.ReactNode
@@ -63,7 +62,6 @@ export function BlocksAi02({
   defaultModel = "gpt-5",
   onVoiceStart,
   voiceActive = false,
-  suggestedDraft,
   onFilesSelected,
   onSubmit,
   renderComposer,
@@ -75,12 +73,6 @@ export function BlocksAi02({
   const selectedModel =
     blocksAi02Models.find((candidate) => candidate.value === model) ??
     blocksAi02Models[0]
-
-  React.useEffect(() => {
-    if (!suggestedDraft) return
-    setMessage(suggestedDraft.text)
-    textareaRef.current?.focus()
-  }, [suggestedDraft])
 
   React.useEffect(() => {
     const textarea = textareaRef.current
