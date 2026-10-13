@@ -22,6 +22,7 @@ export default function Home() {
   const [speakerOn, setSpeakerOn] = useState(true)
   const [files, setFiles] = useState<string[]>([])
   const [error, setError] = useState("")
+  const [suggestedDraft, setSuggestedDraft] = useState<{ text: string; id: number }>()
   const recognition = useRef<any>(null)
   const replyTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const scroller = useRef<HTMLDivElement>(null)
@@ -65,8 +66,11 @@ export default function Home() {
   return <main className="ultraglot-chat">
     <div className="ug-shell">
       <div ref={scroller} className="ug-conversation" aria-label="Conversation" onScroll={e => { const el = e.currentTarget; pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80 }}>
+        {messages.length === 1 && <div className="ug-starters" aria-label="Conversation starters">
+          {["Tell me about London in the spring", "Let's talk about the history of Paris", "What's a food you grew up with?"].map(text => <button key={text} type="button" onClick={() => setSuggestedDraft({ text, id: Date.now() })}>{text}</button>)}
+        </div>}
         <div className="ug-thread" role="log" aria-live="polite" aria-relevant="additions">
-          {messages.map(m => <div key={m.id} className={m.from?.isLocal ? "ug-message ug-message-user" : "ug-message ug-message-agent"}><span className="ug-message-label">{m.from?.isLocal ? "You" : "Ultraglot AI Tutor"}</span><p>{m.message}</p></div>)}
+          {messages.map(m => <div key={m.id} className={m.from?.isLocal ? "ug-message ug-message-user" : "ug-message ug-message-agent"}><p>{m.message}</p></div>)}
         </div>
         {thinking && <div className="ug-thinking"><ThinkingState title="Thinking" status="running" rows={[{ id: "reply", label: "Preparing a response", status: "running" }]} /></div>}
         {files.length > 0 && <p className="ug-files">Selected locally: {files.join(", ")}</p>}
@@ -81,7 +85,7 @@ export default function Home() {
           </div>
         </section>}
       </div>
-      <div className="ug-bottom"><BlocksAi02 className="ug-composer" voiceActive={voice !== "idle"} onVoiceStart={startVoice} onSubmit={answer} onFilesSelected={items => setFiles(f => [...f, ...items.map(x => x.name)])}/></div>
+      <div className="ug-bottom"><BlocksAi02 className="ug-composer" suggestedDraft={suggestedDraft} voiceActive={voice !== "idle"} onVoiceStart={startVoice} onSubmit={answer} onFilesSelected={items => setFiles(f => [...f, ...items.map(x => x.name)])}/></div>
     </div>
   </main>
 }

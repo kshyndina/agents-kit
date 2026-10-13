@@ -52,6 +52,7 @@ export type BlocksAi02Props = {
   defaultModel?: (typeof blocksAi02Models)[number]["value"]
   onVoiceStart?: () => void
   voiceActive?: boolean
+  suggestedDraft?: { text: string; id: number }
   onFilesSelected?: (files: File[]) => void
   onSubmit?: (message: string, model: string) => void
   renderComposer?: (composer: React.ReactNode) => React.ReactNode
@@ -62,6 +63,7 @@ export function BlocksAi02({
   defaultModel = "gpt-5",
   onVoiceStart,
   voiceActive = false,
+  suggestedDraft,
   onFilesSelected,
   onSubmit,
   renderComposer,
@@ -73,6 +75,12 @@ export function BlocksAi02({
   const selectedModel =
     blocksAi02Models.find((candidate) => candidate.value === model) ??
     blocksAi02Models[0]
+
+  React.useEffect(() => {
+    if (!suggestedDraft) return
+    setMessage(suggestedDraft.text)
+    textareaRef.current?.focus()
+  }, [suggestedDraft])
 
   React.useEffect(() => {
     const textarea = textareaRef.current
@@ -96,7 +104,7 @@ export function BlocksAi02({
 
   const maxBadge = (
     <span className="inline-flex h-[15px] items-center rounded-[4px] border border-border/80 bg-muted/40 px-[5px]">
-      <span className="bg-gradient-to-r from-slate-500 to-violet-500 bg-clip-text text-[9px] font-bold leading-none tracking-[0.06em] text-transparent uppercase">
+      <span className="text-[9px] font-bold leading-none tracking-[0.06em] text-[#2453E6] uppercase">
         Max
       </span>
     </span>

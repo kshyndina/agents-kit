@@ -242,3 +242,13 @@ html.dark {
 .ug-bottom { border-top:0; padding-top:8px; }
 .ug-composer>div:first-of-type { border-radius:24px; }
 @media(max-width:600px) { .ug-shell { padding-inline:16px; } .ug-conversation { padding-top:22px; } }
+
+@font-face { font-family:'Space Grotesk'; src:url('/space-grotesk.ttf') format('truetype'); font-style:normal; font-weight:100 900; font-display:swap; }
+.ug-starters { max-width:900px; margin:0 auto 24px; display:flex; gap:10px; flex-wrap:wrap; }
+.ug-starters button { min-height:44px; padding:9px 15px; background:#fff; border:1px solid #d8dcd3; border-radius:9999px; color:#171817; font:400 14px/1.35 -apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif; text-align:left; cursor:pointer; }
+.ug-starters button:hover { border-color:#2453E6; }
+.ug-message-agent { background:#fff; padding:16px 20px; border-radius:24px 24px 24px 5px; }
+.ug-message-user { background:#2453E6; color:#fff; }
+.ug-composer [aria-label^="Model:"] { color:#171817; }
+.ug-composer [aria-label^="Model:"] .bg-gradient-to-r { background:none; -webkit-text-fill-color:#2453E6; color:#2453E6; }
+@media (max-width:600px) { .ug-starters { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; } .ug-starters button { flex:none; max-width:80vw; } .ug-message-agent {padding:15px 17px;} }
