@@ -41,7 +41,7 @@ export default function Home() {
           <div className="mx-auto grid max-w-[1080px] gap-8 lg:grid-cols-[1.12fr_.88fr] lg:items-start">
             <div className="min-w-0">
               <div className="space-y-5">
-                {messages.map((m) => <div key={m.id} className={m.from.isLocal ? "ml-auto max-w-[82%] rounded-[22px] bg-blue-50 px-5 py-3 text-sm text-slate-800" : "max-w-[88%] px-1 py-2 text-[15px] leading-7"}>{m.message}</div>)}
+                {messages.map((m) => <div key={m.id} className={m.from?.isLocal ? "ml-auto max-w-[82%] rounded-[22px] bg-blue-50 px-5 py-3 text-sm text-slate-800" : "max-w-[88%] px-1 py-2 text-[15px] leading-7"}>{m.message}</div>)}
               </div>
               {thinking && <div className="mt-5"><ThinkingState title="Thinking" status="running" rows={[{ id: "one", label: "Reading the conversation", status: "complete" }, { id: "two", label: "Preparing a response", status: "running" }]} /></div>}
               {files.length > 0 && <div className="mt-4 text-xs text-text-secondary">Attached: {files.join(", ")}</div>}
