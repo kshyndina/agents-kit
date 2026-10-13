@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { BlocksAi02 } from "@/components/blocks-so/ai/ai-02"
