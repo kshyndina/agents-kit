@@ -64,14 +64,9 @@ export default function Home() {
 
   return <main className="ultraglot-chat">
     <div className="ug-shell">
-      <header className="ug-header">
-        <div className="ug-brand"><svg className="ug-mark" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M9 10v19c0 9 6 14 15 14s15-5 15-14V10" stroke="currentColor" strokeWidth="9" strokeLinecap="round"/></svg><span>ultraglot<span className="ug-brand-dot">.</span></span></div>
-        <span className="ug-header-label">PRACTICE / CONVERSATION</span>
-      </header>
       <div ref={scroller} className="ug-conversation" aria-label="Conversation" onScroll={e => { const el = e.currentTarget; pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80 }}>
-        <div className="ug-intro"><span className="ug-eyebrow"><span className="ug-eyebrow-line"/> YOUR PRACTICE SPACE</span><h1>Find your words.<br/><em>Use your voice.</em></h1><p>A place to think out loud, try a phrase, and keep the conversation going.</p></div>
         <div className="ug-thread" role="log" aria-live="polite" aria-relevant="additions">
-          {messages.map(m => <div key={m.id} className={m.from?.isLocal ? "ug-message ug-message-user" : "ug-message ug-message-agent"}><span className="ug-message-label">{m.from?.isLocal ? "YOU" : "ULTRAGLOT · PRACTICE PARTNER"}</span><p>{m.message}</p></div>)}
+          {messages.map(m => <div key={m.id} className={m.from?.isLocal ? "ug-message ug-message-user" : "ug-message ug-message-agent"}><span className="ug-message-label">{m.from?.isLocal ? "You" : "Ultraglot AI Tutor"}</span><p>{m.message}</p></div>)}
         </div>
         {thinking && <div className="ug-thinking"><ThinkingState title="Thinking" status="running" rows={[{ id: "reply", label: "Preparing a response", status: "running" }]} /></div>}
         {files.length > 0 && <p className="ug-files">Selected locally: {files.join(", ")}</p>}
@@ -86,7 +81,7 @@ export default function Home() {
           </div>
         </section>}
       </div>
-      <div className="ug-bottom"><div className="ug-composer-heading"><span>YOUR TURN</span><span>TYPE OR SPEAK <span aria-hidden="true">↗</span></span></div><BlocksAi02 className="ug-composer" voiceActive={voice !== "idle"} onVoiceStart={startVoice} onSubmit={answer} onFilesSelected={items => setFiles(f => [...f, ...items.map(x => x.name)])}/><p className="ug-footer">A space to practise, not a test. Take your time.</p></div>
+      <div className="ug-bottom"><BlocksAi02 className="ug-composer" voiceActive={voice !== "idle"} onVoiceStart={startVoice} onSubmit={answer} onFilesSelected={items => setFiles(f => [...f, ...items.map(x => x.name)])}/></div>
     </div>
   </main>
 }

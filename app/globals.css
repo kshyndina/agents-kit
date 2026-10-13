@@ -231,3 +231,14 @@ html.dark {
 @media(max-width:600px){.ug-shell {padding-inline:20px;}.ug-header {min-height:64px;}.ug-brand {font-size:23px;}.ug-mark {width:27px;height:27px;}.ug-header-label {font-size:9px;letter-spacing:.06em;}.ug-conversation {padding-top:28px;}.ug-intro {margin-bottom:32px;}.ug-intro h1 {font-size:clamp(36px,10vw,50px);}.ug-intro>p {font-size:15px;}.ug-message {max-width:92%;}.ug-message-agent,.ug-message-user {padding:15px 17px;}.ug-message p {font-size:16px;}.ug-bottom {padding-top:11px;}.ug-composer-heading {margin-bottom:8px;}.ug-composer [aria-label="Suggested prompts"] button {font-size:12px;}.ug-footer {display:none;}}
 @media(max-height:650px){.ug-intro {margin-bottom:22px;}.ug-conversation {padding-top:18px;}.ug-footer {display:none;}}
 @media(prefers-reduced-motion:reduce){.ultraglot-chat * {scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important;}.ultraglot-chat button:active {transform:none;}}
+
+/* Focused tutor chat: no masthead, hero, frame, or composer heading. */
+.ug-shell { width:min(100%,1120px); min-height:0; padding-top:0; }
+.ug-conversation { padding-top:clamp(20px,4vh,46px); }
+.ug-thread { max-width:900px; margin-inline:auto; }
+.ug-message-agent { background:transparent; padding:10px 2px; border-radius:0; }
+.ug-message-agent .ug-message-label { color:#2453E6; }
+.ug-voice { background:transparent; padding:12px; }
+.ug-bottom { border-top:0; padding-top:8px; }
+.ug-composer>div:first-of-type { border-radius:24px; }
+@media(max-width:600px) { .ug-shell { padding-inline:16px; } .ug-conversation { padding-top:22px; } }
