@@ -115,7 +115,7 @@ export function BlocksAi02({
               event.currentTarget.form?.requestSubmit()
             }
           }}
-          placeholder="Ask about this fieldwork"
+          placeholder="Type a message…"
           ref={textareaRef}
           rows={1}
           value={message}

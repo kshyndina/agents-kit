@@ -15,7 +15,9 @@ const demoReply = "Nice. Let's practise that together. Tell me a little more and
 export default function Home() {
   const [messages, setMessages] = useState<ReceivedMessage[]>(seed)
   const [thinking, setThinking] = useState(false)
-  const [voice, setVoice] = useState<VoiceState>("idle")
+  const [voice, setVoiceState] = useState<VoiceState>("idle")
+  const voiceRef = useRef<VoiceState>("idle")
+  const setVoice = (state: VoiceState) => { voiceRef.current = state; setVoiceState(state) }
   const [micOn, setMicOn] = useState(true)
   const [speakerOn, setSpeakerOn] = useState(true)
   const [files, setFiles] = useState<string[]>([])
@@ -29,10 +31,10 @@ export default function Home() {
   const add = (text: string, local: boolean) => setMessages(m => [...m, { id: `${Date.now()}-${Math.random()}`, timestamp: Date.now(), from: { isLocal: local }, message: text } as ReceivedMessage])
   const answer = (text: string) => {
     add(text, true); setThinking(true)
-    if (voice !== "idle") setVoice("thinking")
+    if (voiceRef.current !== "idle") setVoice("thinking")
     replyTimer.current = setTimeout(() => {
       setThinking(false); add(demoReply, false)
-      if (voice !== "idle") {
+      if (voiceRef.current !== "idle") {
         setVoice("speaking")
         if (speakerOn && "speechSynthesis" in window) {
           const utterance = new SpeechSynthesisUtterance(demoReply)
