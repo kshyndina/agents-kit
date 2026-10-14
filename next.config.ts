@@ -15,7 +15,7 @@ const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   outputFileTracingRoot: process.cwd(),
   outputFileTracingExcludes: { "*": ["./vendor/**/*"] },
-  output: "export" as const, // Enable static HTML export
+  // Use the Next runtime so BYOK requests can be proxied without browser CORS failures.
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   images: {
     unoptimized: true, // Required for static export
