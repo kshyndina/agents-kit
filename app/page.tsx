@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
+import { ProviderSetup } from "./provider-setup"
+import { chat, loadConfig, type Config } from "@/lib/byok"
 import { BlocksAi02 } from "@/components/blocks-so/ai/ai-02"
 import { ThinkingState } from "@/components/beautiful-ui/thinking-state"
 import { Orb } from "@/components/voice-agents/elevenlabs/orb"
@@ -10,7 +12,6 @@ import { useEffect, useRef, useState } from "react"
 
 type VoiceState = "idle" | "listening" | "thinking" | "speaking"
 const seed = [{ id: "welcome", timestamp: 1, from: { isLocal: false }, message: "Hi — what would you like to practise today?" }] as ReceivedMessage[]
-const demoReply = "Nice. Let's practise that together. Tell me a little more and we'll keep the conversation going."
 
 export default function Home() {
   const [messages, setMessages] = useState<ReceivedMessage[]>(seed)
@@ -23,32 +24,53 @@ export default function Home() {
   const [files, setFiles] = useState<string[]>([])
   const [error, setError] = useState("")
   const recognition = useRef<any>(null)
-  const replyTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [config, setConfig] = useState<Config | null>(null)
+  const configRef = useRef<Config | null>(null)
+  const [setup, setSetup] = useState(false)
+  const pendingText = useRef<string | null>(null)
+  const [pending, setPending] = useState(false)
+  const pendingRef = useRef(false)
+  const abortRef = useRef<AbortController | null>(null)
+  const messagesRef = useRef(messages)
+  useEffect(() => { messagesRef.current = messages }, [messages])
+  useEffect(() => { const saved = loadConfig(); configRef.current = saved; setConfig(saved) }, [])
   const scroller = useRef<HTMLDivElement>(null)
   const pinned = useRef(true)
   useEffect(() => { if (pinned.current) scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "smooth" }) }, [messages, thinking, voice])
-  useEffect(() => () => { recognition.current?.abort?.(); if (replyTimer.current) clearTimeout(replyTimer.current); if ("speechSynthesis" in window) window.speechSynthesis.cancel() }, [])
+  useEffect(() => () => { recognition.current?.abort?.(); abortRef.current?.abort(); if ("speechSynthesis" in window) window.speechSynthesis.cancel() }, [])
 
   const add = (text: string, local: boolean) => setMessages(m => [...m, { id: `${Date.now()}-${Math.random()}`, timestamp: Date.now(), from: { isLocal: local }, message: text } as ReceivedMessage])
-  const answer = (text: string) => {
+  const send = async (text: string, configured: Config) => {
+    if (pendingRef.current) return
+    pendingRef.current = true; setPending(true); setError(""); setSetup(false)
     pinned.current = true
+    const turns = messagesRef.current.filter(m => m.id !== "welcome").map(m => ({ role: m.from?.isLocal ? "user" as const : "assistant" as const, content: String(m.message) }))
+    turns.push({ role: "user", content: text })
     add(text, true); setThinking(true)
     if (voiceRef.current !== "idle") setVoice("thinking")
-    if (replyTimer.current) clearTimeout(replyTimer.current)
-    replyTimer.current = setTimeout(() => {
-      setThinking(false); add(demoReply, false)
+    const controller = new AbortController(); abortRef.current = controller
+    try {
+      const reply = await chat(configured, turns, controller.signal)
+      add(reply, false)
       if (voiceRef.current !== "idle") {
         setVoice("speaking")
         if (speakerOn && "speechSynthesis" in window) {
-          const utterance = new SpeechSynthesisUtterance(demoReply)
-          utterance.onend = () => { if (voiceRef.current !== "idle") setVoice("listening") }
-          utterance.onerror = () => { if (voiceRef.current !== "idle") setVoice("listening") }
+          const utterance = new SpeechSynthesisUtterance(reply)
+          utterance.onend = utterance.onerror = () => { if (voiceRef.current !== "idle") setVoice("listening") }
           window.speechSynthesis.speak(utterance)
         } else setVoice("listening")
       }
-    }, 750)
+    } catch (e) { setError(e instanceof Error ? e.message : "Chat request failed."); if (voiceRef.current !== "idle") setVoice("listening") }
+    finally { setThinking(false); setPending(false); pendingRef.current = false; abortRef.current = null }
   }
-  const stopVoice = () => { recognition.current?.abort?.(); recognition.current = null; window.speechSynthesis?.cancel(); setVoice("idle"); setThinking(false); if (replyTimer.current) clearTimeout(replyTimer.current) }
+  const answer = (text: string) => {
+    if (!text.trim() || pendingRef.current) return
+    const saved = configRef.current || loadConfig()
+    if (!saved) { pendingText.current = text.trim(); setPending(true); setSetup(true); setError(""); return }
+    configRef.current = saved; setConfig(saved)
+    void send(text.trim(), saved)
+  }
+  const stopVoice = () => { recognition.current?.abort?.(); recognition.current = null; window.speechSynthesis?.cancel(); setVoice("idle"); abortRef.current?.abort(); setThinking(false) }
   const startVoice = () => {
     if (voice !== "idle") { stopVoice(); return }
     setError(""); setVoice("listening"); setMicOn(true)
@@ -68,6 +90,7 @@ export default function Home() {
         <div className="ug-thread" role="log" aria-live="polite" aria-relevant="additions">
           {messages.map(m => <div key={m.id} className={m.from?.isLocal ? "ug-message ug-message-user" : "ug-message ug-message-agent"}><p>{m.message}</p></div>)}
         </div>
+        {error && <p role="alert" className="ug-error">{error}</p>}
         {thinking && <div className="ug-thinking"><ThinkingState title="Thinking" status="running" rows={[{ id: "reply", label: "Preparing a response", status: "running" }]} /></div>}
         {files.length > 0 && <p className="ug-files">Selected locally: {files.join(", ")}</p>}
         {voice !== "idle" && <section className="ug-voice" aria-label="Voice practice">
@@ -82,6 +105,8 @@ export default function Home() {
         </section>}
       </div>
       <div className="ug-bottom">
+        {setup && <ProviderSetup current={config} onRemove={() => { configRef.current = null; pendingText.current = null; setConfig(null); setSetup(false); setPending(false) }} onClose={() => { pendingText.current = null; setSetup(false); setPending(false) }} onSave={saved => { configRef.current = saved; setConfig(saved); setSetup(false); setPending(false); const text = pendingText.current; pendingText.current = null; if (text) void send(text, saved) }} />}
+        <button className="ug-settings-trigger" type="button" onClick={() => setSetup(true)}>{config ? `Provider: ${config.provider} · Settings` : "Connect provider"}</button>
         {messages.length === 1 && <div className="ug-starters" aria-label="Send a conversation starter">
           {["Tell me about London in the spring", "Let's talk about the history of Paris", "What's a food you grew up with?"].map(text => <button key={text} type="button" onClick={() => answer(text)}>{text}</button>)}
         </div>}
